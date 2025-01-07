@@ -112,8 +112,10 @@ public class ADDialogue : MonoBehaviour
                 foreach (var filename in mod.ModInfo.Files)
                 {
                     string filePath = Path.Combine(Application.dataPath, filename).Replace("Assets/Assets", "Assets");
+                    filePath = filePath.Replace("Assets\\Assets", "Assets").Replace("Assets/Assets", "Assets");
 
-                    if (File.Exists(filePath) && filename.EndsWith("AD_Keys.csv", StringComparison.InvariantCultureIgnoreCase))
+                    if (File.Exists(filePath))
+                        if (filename.ToLower().EndsWith("ad_keys.csv", StringComparison.InvariantCultureIgnoreCase))
                     {
                         // Read file as UTF-8 to support non-Latin characters
                         var csvText = File.ReadAllText(filePath, System.Text.Encoding.UTF8);
@@ -205,6 +207,7 @@ public class ADDialogue : MonoBehaviour
                 foreach (var filename in mod.ModInfo.Files.Where(file => file.EndsWith("_Dialogue.csv", StringComparison.InvariantCultureIgnoreCase)))
                 {
                     string filePath = Path.Combine(Application.dataPath, filename).Replace("Assets/Assets", "Assets");
+                    filePath = filePath.Replace("Assets\\Assets", "Assets").Replace("Assets/Assets", "Assets");
 
                     if (File.Exists(filePath))
                     {
