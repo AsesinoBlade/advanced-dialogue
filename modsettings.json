@@ -1,0 +1,25 @@
+{
+    "Version": null,
+    "Sections": [
+        {
+            "Name": "Options",
+            "Description": null,
+            "IsAdvanced": false,
+            "Keys": [
+                {
+                    "Options": [
+                        "Original Window",
+                        "Small Window",
+                        "Large Window"
+                    ],
+                    "Value": 0,
+                    "Name": "WindowType",
+                    "Description": null,
+                    "$version": "v1",
+                    "$type": "DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings.MultipleChoiceKey"
+                }
+            ],
+            "$version": "v1"
+        }
+    ]
+}

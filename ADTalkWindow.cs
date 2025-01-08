@@ -497,6 +497,7 @@ namespace DaggerfallWorkshop.Game.UserInterface
             ParentPanel.BackgroundColor = ScreenDimColor;
 
             textureBackground = DaggerfallUI.GetTextureFromImg(talkWindowImgName, TextureFormat.ARGB32, false);
+            base.textureBackground = null;
             textureBackground.filterMode = DaggerfallUI.Instance.GlobalFilterMode;
             if (!textureBackground)
             {
@@ -507,6 +508,7 @@ namespace DaggerfallWorkshop.Game.UserInterface
 
             mainPanel = DaggerfallUI.AddPanel(NativePanel, AutoSizeModes.None);
             mainPanel.BackgroundTexture = textureBackground;
+            base.mainPanel.Enabled = false;
             //mainPanel.Size = new Vector2(textureBackground.width, textureBackground.height);
             mainPanel.Size = new Vector2(320, 200); // reference size is always vanilla df resolution
             mainPanel.HorizontalAlignment = HorizontalAlignment.Center;

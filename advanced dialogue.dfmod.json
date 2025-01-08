@@ -12,8 +12,14 @@
         "Assets/Game/Mods/advanced-dialogue/ADDialogue.cs",
         "Assets/Game/Mods/advanced-dialogue/ADTalkWindow.cs",
         "Assets/Game/Mods/advanced-dialogue/ADSaveDataHandler.cs",
-        "Assets/Game/Mods/advanced-dialogue/advanced dialogue.dfmod.json"
+        "Assets/Game/Mods/advanced-dialogue/advanced dialogue.dfmod.json",
+        "Assets/Game/Mods/advanced-dialogue/modsettings.json",
+        "Assets/Game/Mods/advanced-dialogue/Textures/ADTalkButton.png",
+        "Assets/Game/Mods/advanced-dialogue/Textures/ADTALK01I0Small.IMG.png",
+        "Assets/Game/Mods/advanced-dialogue/Textures/ADTALK01I0Large.IMG.png",
+        "Assets/Game/Mods/advanced-dialogue/ADSeeThroughTalkWindow.cs"
     ],
+    "ModPreCompile": true,
     "Dependencies": [
         {
             "Name": "hidden map locations",

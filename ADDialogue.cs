@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using DaggerfallWorkshop.Game.Utility.ModSupport.ModSettings;
 using Wenzil.Console;
 
 public class ADDialogue : MonoBehaviour
@@ -30,6 +31,14 @@ public class ADDialogue : MonoBehaviour
     public static bool CnCModEnabled;
 
     public static Dictionary<string, object> LocalizationKeys = new Dictionary<string, object>();
+
+    public static int WindowType { get; set; } = 0;
+    public static Texture2D buttonTexture = null;
+    public static Texture2D OriginalTexture2D = null;
+    public static Texture2D SmallTexture2D = null;
+    public static Texture2D LargeTexture2D = null;
+    public static int WindowChoice { get; set; } = 0;
+
 
     public class DialogueListItem
     {
@@ -54,7 +63,7 @@ public class ADDialogue : MonoBehaviour
         bool dialogueWindowEnabled = true; // Adjust based on mod settings or conditions
         if(dialogueWindowEnabled)
         {
-            UIWindowFactory.RegisterCustomUIWindow(UIWindowType.Talk, typeof(ADTalkWindow));
+            UIWindowFactory.RegisterCustomUIWindow(UIWindowType.Talk, typeof(ADSeeThroughTalkWindow));
         }
 
         // Set the singleton save data handler as the mod's save data interface
@@ -75,6 +84,43 @@ public class ADDialogue : MonoBehaviour
         ConsoleCommandsDatabase.RegisterCommand("AD_KnownCaptions", "Lists all known captions.", "", ListKnownCaptions);
         ConsoleCommandsDatabase.RegisterCommand("AD_AllCaptions", "Lists all captions in dialogue items.", "", ListAllCaptions);
     }
+
+    public void Awake()
+    {
+        Mod.LoadSettingsCallback = LoadSettings;
+        Mod.LoadSettings();
+        if (!ModManager.Instance.TryGetAsset("ADTalkButton", false, out buttonTexture))
+        {
+            Debug.LogError("AD Dialogue: Failed to load Button Texture.");
+        }
+        Mod.IsReady = true;
+    }
+
+    private void LoadSettings(ModSettings settings, ModSettingsChange change)
+    {
+        var WindowType = settings.GetValue<int>("Options", "WindowType");
+        OriginalTexture2D = DaggerfallUI.GetTextureFromImg("TALK01I0.IMG", TextureFormat.ARGB32, false);
+        if (!OriginalTexture2D)
+        {
+            Debug.LogError(string.Format("Failed to load background image TALK01I0.IMG for talk window"));
+        }
+        if (!ModManager.Instance.TryGetAsset("ADTALK01I0Large.IMG", false, out LargeTexture2D))
+        {
+            Debug.LogError("AD Dialog: Failed to load large Button.");
+        }
+        if (!ModManager.Instance.TryGetAsset("ADTALK01I0Small.IMG", false, out SmallTexture2D))
+        {
+            Debug.LogError("AD Dialog: Failed to load Small Button.");
+        }
+
+        if (WindowType == 1 && SmallTexture2D != null)
+            WindowChoice = 1;
+        else if (WindowType == 2 && LargeTexture2D != null)
+            WindowChoice = 2;
+        else
+            WindowChoice = 0;
+    }
+
 
     public void LoadLocalizationKeys()
     {
