@@ -332,6 +332,12 @@ namespace DaggerfallWorkshop.Game.UserInterface
                 SetTalkCategoryLocation();
             }
 
+            if (isSetup)
+            {
+                selectedTalkTone = FormulaHelper.GetDefaultTalkTone(TalkManager.Instance.NpcData.socialGroup);
+                UpdateCheckboxes();
+            }
+
             selectedTalkOption = TalkOption.WhereIs;
             selectedTalkCategory = TalkCategory.Location;
             talkCategoryLastUsed = TalkCategory.None;
@@ -395,7 +401,8 @@ namespace DaggerfallWorkshop.Game.UserInterface
                 copiedEntries.Add(entry);
                 prev = idx;
             }
-            GameManager.Instance.PlayerEntity.Notebook.AddNote(copiedEntries);
+            if (copiedEntries != null && copiedEntries.Count > 0)
+                GameManager.Instance.PlayerEntity.Notebook.AddNote(copiedEntries);
 
             // Retrieve the NPC name from filterVariables and cast it explicitly to string
             string npcName = filterVariables["Name"] as string; // Use 'as' for safe casting which returns null if the cast fails
@@ -1196,13 +1203,13 @@ namespace DaggerfallWorkshop.Game.UserInterface
             {
                 variableValue = random.Next(1, 101); // Generate a random number from 1 to 100
             }
-            else if (!filterVariables.TryGetValue(variableName, out variableValue))
+            else if (filterVariables == null || filterVariables.Count == 0 || !filterVariables.TryGetValue(variableName, out variableValue))
             {
                 Debug.Log($"Variable '{variableName}' not found in filterVariables.");
                 return false;
             }
 
-            string variableValueStr = variableValue.ToString();
+            string variableValueStr = (variableValue == null) ? "" : variableValue.ToString();
             string[] valuesToCompare = valueToCompare.Split('|').Select(v => v.Trim()).ToArray();
 
             switch (comparisonOperator)
@@ -2045,14 +2052,18 @@ namespace DaggerfallWorkshop.Game.UserInterface
                         if (listItem.questionType == TalkManager.QuestionType.WhereAmI)
                         {
                             // Check if the NPC is in a building using filterVariables
-                            if (filterVariables.TryGetValue("In Building", out object isInBuilding) && (int)isInBuilding == 1)
+                            if (GameManager.Instance.PlayerEnterExit.IsPlayerInsideBuilding && filterVariables.TryGetValue("In Building", out object isInBuilding) && (int)isInBuilding == 1)
                             {
                                 // NPC is inside a building, get the building name
                                 if (filterVariables.TryGetValue("Building Name", out object buildingName))
                                 {
+                                    if (buildingName == null)
+                                        buildingName = GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData.displayName;
+                                    if (buildingName == null)
+                                        buildingName = "Residence";
                                     // Convert the building name to lowercase and add it to knownCaptions
                                     string buildingNameToAdd = buildingName.ToString().ToLower();
-                                    if (!knownCaptions.Contains(buildingNameToAdd))
+                                    if (filterVariables.ContainsKey((string)buildingName) && !knownCaptions.Contains(buildingNameToAdd))
                                     {
                                         knownCaptions.Add(buildingNameToAdd);
                                         topicsUpdated = true;
@@ -2068,9 +2079,13 @@ namespace DaggerfallWorkshop.Game.UserInterface
                                 // NPC is not in a building, get the region name
                                 if (filterVariables.TryGetValue("Region Name", out object currentRegionName))
                                 {
+                                    if (currentRegionName == null)
+                                        currentRegionName = TextManager.Instance.GetLocalizedRegionName(GameManager.Instance.PlayerGPS.CurrentRegionIndex);
+                                    if (currentRegionName == null)
+                                        currentRegionName = "some region but not sure which.";
                                     // Convert the region name to lowercase and add it to knownCaptions
                                     string regionNameToAdd = currentRegionName.ToString().ToLower();
-                                    if (!knownCaptions.Contains(regionNameToAdd))
+                                    if (filterVariables.ContainsKey((string)currentRegionName) && !knownCaptions.Contains(regionNameToAdd))
                                     {
                                         knownCaptions.Add(regionNameToAdd);
                                         topicsUpdated = true;
@@ -2085,9 +2100,13 @@ namespace DaggerfallWorkshop.Game.UserInterface
                             // NPC is not in a building, get the location name
                             if (filterVariables.TryGetValue("Location Name", out object currentLocationName))
                             {
+                                if (currentLocationName == null)
+                                    currentLocationName = TextManager.Instance.GetLocalizedLocationName(GameManager.Instance.PlayerGPS.CurrentMapID, GameManager.Instance.PlayerGPS.CurrentLocation.Name);
+                                if (currentLocationName == null)
+                                    currentLocationName = TextManager.Instance.GetLocalizedRegionName(GameManager.Instance.PlayerGPS.CurrentRegionIndex);
                                 // Convert the region name to lowercase and add it to knownCaptions
                                 string locationNameToAdd = currentLocationName.ToString().ToLower();
-                                if (!knownCaptions.Contains(locationNameToAdd))
+                                if (filterVariables.ContainsKey((string)currentLocationName) && !knownCaptions.Contains(locationNameToAdd))
                                 {
                                     knownCaptions.Add(locationNameToAdd);
                                     topicsUpdated = true;
